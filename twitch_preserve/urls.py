@@ -13,25 +13,34 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from opay_listen.views import OpayView
 from django.urls import include
 from django.contrib import admin
-from django.urls import path
+from django.urls import path,re_path
 from rest_framework.routers import DefaultRouter
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
+from account.views import AccountView
+from userprofile.views import ProfileView
 from preserve import views
+
 router = DefaultRouter()
 router.register(r"preserve", views.PreserveViewSet, basename='preserve')
-router.register(r'user', views.UserViewSet, basename='user')
+router.register(r'opay', OpayView, basename='opay')
+router.register(r'account', AccountView, basename='user')
+router.register(r'profile', ProfileView, basename='profile')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    re_path(r'^api-auth/', include('rest_framework.urls',
+                               namespace='rest_framework')),
+
 
 ]
 urlpatterns += staticfiles_urlpatterns()
